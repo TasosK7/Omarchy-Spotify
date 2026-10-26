@@ -648,7 +648,10 @@ Item {
   }
 
   function configuredEntry() {
-    var config = shell && shell.shellConfig ? shell.shellConfig : null
+    // Third-party plugins get a restricted shell API without shellConfig, so
+    // fall back to its barConfig, which still carries this widget's settings.
+    var config = shell && shell.shellConfig ? shell.shellConfig
+      : (shell && shell.barConfig ? { bar: shell.barConfig } : null)
     if (!config) return null
     var layout = config.bar && config.bar.layout ? config.bar.layout : null
     var sections = ["left", "center", "right"]
@@ -3766,6 +3769,7 @@ Item {
     target: root.shell
     ignoreUnknownSignals: true
     function onShellConfigChanged() { root.syncSettings() }
+    function onBarConfigChanged() { root.syncSettings() }
   }
 
   Connections {
